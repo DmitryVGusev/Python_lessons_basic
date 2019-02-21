@@ -26,11 +26,11 @@ def fibonacci(n: int, m: int):
 
 
 # Проверка результата
-print(fibonacci(3, 6))  # return [2, 3, 5, 8]
-print(fibonacci(0, 2))  # return None
-print(fibonacci(-1, 20))  # return None
-print(fibonacci(5, 4))  # return None
-print(fibonacci(6, 6))  # return [8]
+# print(fibonacci(3, 6))  # return [2, 3, 5, 8]
+# print(fibonacci(0, 2))  # return None
+# print(fibonacci(-1, 20))  # return None
+# print(fibonacci(5, 4))  # return None
+# print(fibonacci(6, 6))  # return [8]
 
 # Задача-2:
 # Напишите функцию, сортирующую принимаемый список по возрастанию.
@@ -70,7 +70,7 @@ def sort_to_max(origin_list:list):
 
     return result
 
-print(sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0]))
+# print(sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0]))
 
 
 # Задача-3:
@@ -100,54 +100,55 @@ from math import sqrt
 
 
 
-# def is_parallelogram(A1: list, A2: list, A3: list, A4: list):
-#     """Функция, возвращающая True если по четырем точкам можно построить параллелограм"""
-#     # lambda - функция, реализующая теорему Пифагора о расстаянии между двумя точками
-#     distance_between = lambda a, b: sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2)
-#     triangle_sides = lambda a, b, c: [distance_between(a, b), distance_between(b, c), distance_between(a, c)]
-#
-#     if sorted(triangle_sides(A1, A2, A3)) != sorted(triangle_sides(A1, A4, A3)):
-#         return False
-#     elif sorted(triangle_sides(A1, A2, A4)) != sorted(triangle_sides(A4, A2, A3)):
-#         return False
-#     else:
-#         return True
-#
-#
-# medial_point = lambda a, b: [(b[0] + a[0])/2, (b[1] + a[1])/2]
-#
-# A1 = [0, 0]
-# A2 = [6, 4]
-# A3 = [5, 0]
-# A4 = [1, 4]
-#
-# dots = [A1, A2, A3, A4]
-# medials = []
-# while len(dots) > 1:
-#     dot = dots.pop(0)
-#     for i in dots:
-#         medials.append(medial_point(dot, i))
-#
-# print(medials)
-#
-# for point in dots:
-#
-#
-#
-#
-# medials = [
-#     medial_point(A1, A2),
-#     medial_point(A1, A3),
-#     medial_point(A1, A4),
-#     medial_point(A2, A3),
-#     medial_point(A2, A4),
-#     medial_point(A3, A4)
-# ]
-# print(medials)
+def is_parallelogram(A1: list, A2: list, A3: list, A4: list):
+    """
+    Функция, возвращающая True если по четырем заданным точкам можно построить параллелограм
+    :param A1: список координат [x, y]
+    :param A2: список координат [x, y]
+    :param A3: список координат [x, y]
+    :param A4: список координат [x, y]
+    :return: True or False
+    """
+
+    def middle_dot(dot1, dot2):
+        """
+        Функция вычисляющая координаты середины отрезка из двух его точек
+        :param dot1: список координат [x, y]
+        :param dot2: список координат [x, y]
+        :return: список координат [x, y]
+        """
+        x = (dot1[0] + dot2[0]) / 2
+        y = (dot1[1] + dot2[1]) / 2
+        return [x, y]
+
+    dots_list = [A1, A2, A3, A4]
+
+    # Проверка если какие-либо точки совпадают
+    if any(dots_list.count(i) != 1 for i in dots_list):
+        return False
+
+    """
+    По геометрии, у параллелограмма диагонали точкой пересечения делятся на 2.
+    Мы не знаем порядок точек, так что попарно ищем серединную точку и записываем в список
+    """
+    middle_dots = []
+    while len(dots_list) > 1:
+        dot = dots_list.pop(0)
+        for i in dots_list:
+            middle_dots.append(middle_dot(dot, i))
+
+    # Если в списке находятся две одинаковых точки, то это диагонали параллелограмма
+    for d in middle_dots:
+        if middle_dots.count(d) == 2:
+            return True
+    return False
 
 
-# def triangle_sides(a, b, c):
-#     return [distance_between(a, b),
-#             distance_between(b, c),
-#             distance_between(a, c)]
+A1 = [0, 0]
+A2 = [6, 4]
+A3 = [5, 0]
+A4 = [1, 4]
+
+print(is_parallelogram(A1, A2, A3, A4))
+
 
