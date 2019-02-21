@@ -151,8 +151,8 @@ def solve_fraction_equation(eq: str):
     return fract_represent(fract3)
 
 
-print(solve_fraction_equation("5/6 + 4/7"))
-print(solve_fraction_equation("-2/3 - -2"))
+# print(solve_fraction_equation("5/6 + 4/7"))
+# print(solve_fraction_equation("-2/3 - -2"))
 
 # Задание-2:
 # Дана ведомость расчета заработной платы (файл "data/workers").
@@ -161,6 +161,101 @@ print(solve_fraction_equation("-2/3 - -2"))
 # то их ЗП уменьшается пропорционально, а за заждый час переработки
 # они получают удвоенную ЗП, пропорциональную норме.
 # Кол-во часов, которые были отработаны, указаны в файле "data/hours_of"
+"""
+Сделаем допущение, что структура файлов верна, выбраковывать строки не надо,
+и о каждом сотруднике есть информация в обоих файлах 
+"""
+
+def form_working_hours(workers_file: str, hours_of_file: str):
+    """
+    Функция расчитывает зарплату сотрудников, основываясь на таблице расчета зп собтрудников
+    и таблице отработанных часов сотрудниками
+    :param workers_file: путь до файла с таблицей расчета ЗП
+    :param hours_of_file: путь до файла с таблицей отработанных часов
+    :return: таблица рассчета итоговой зарплаты
+    """
+
+    # Считаем информацию из файлов и сложим в сыром виде
+    with open(workers_file, "r") as w:
+        workers_raw = w.readlines()
+
+    with open(hours_of_file, "r") as h:
+        hours_raw = h.readlines()
+
+    # Обрабатываем общую информацию о сотрудниках
+    workers = dict()
+    workers_raw.pop(0)
+    for i in workers_raw:
+        line_raw = i.replace('\n', '').split()
+        workers[' '.join([line_raw[1], line_raw[0]])] = [
+            int(line_raw[2]),
+            line_raw[3],
+            int(line_raw[4])
+        ]
+
+    # Обрабатываем информацию об отработанных часах
+    hours_raw.pop(0)
+    for i in hours_raw:
+        line_raw = i.replace('\n', '').split()
+        worker_name = ' '.join([line_raw[1], line_raw[0]])
+        if worker_name in workers:
+            workers[worker_name].append(int(line_raw[2]))
+
+    """
+    Структура словаря workers
+    "Фамилия Имя" : [
+            Должность,
+            Оклад,
+            Норма часов,
+            Отработанные часы]
+    """
+
+    # Подсчет часов
+    def calculate_income(l: list):
+        """
+        Функция высчитывает доход работника за месяц
+        выбирая из списка зарплату рабочего, норму и выработку.
+        :param l:
+        :return:
+        """
+        per_hour_salary = l[0] / l[2]
+        if l[2] >= l[3]:
+            # Сумма за отработанные часы до нормы
+            income = l[3] * per_hour_salary
+        else:
+            # Сумма за отработанные часы сверх нормы
+            # xp + 2p(y-x) = p(2y - x), где x - норма, y - выработка, p - per_hour salary
+            income = per_hour_salary * (2*l[3] - l[2])
+
+    for key in workers.keys():
+
+        per_hour_salary = workers[key][0] / workers[key][2]
+        if workers[key][2] >= workers[key][3]:
+            # Сумма за отработанные часы до нормы
+            income = workers[key][3] * per_hour_salary
+        else:
+            # Сумма за отработанные часы сверх нормы
+            # xp + 2p(y-x) = p(2y - x), где x - норма, y - выработка, p - per_hour salary
+            income = per_hour_salary * (2 * workers[key][3] - workers[key][2])
+        # Добавляем зарплату в список значений элементов словаря workers
+        workers[key].append(income)
+
+    # Вывод результатов
+    print("{:18} {:^12} {:^10} {:10} {:^6}".format("Ф.И.", "Должность", "Оклад", "Отработано", "ЗП"))
+    for key in workers.keys():
+        print("{:18} {:12} {:^10} {:^10} {:0.2f}".format(
+            key,
+            workers[key][1],
+            workers[key][0],
+            workers[key][3],
+            workers[key][4]
+        ))
+
+    return True
+
+workers_file = 'data/workers'
+hours_of_file = 'data/hours_of'
+form_working_hours(workers_file, hours_of_file)
 
 
 # Задание-3:
