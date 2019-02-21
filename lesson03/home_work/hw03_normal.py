@@ -26,11 +26,11 @@ def fibonacci(n: int, m: int):
 
 
 # Проверка результата
-# print(fibonacci(3, 6))  # return [2, 3, 5, 8]
-# print(fibonacci(0, 2))  # return None
-# print(fibonacci(-1, 20))  # return None
-# print(fibonacci(5, 4))  # return None
-# print(fibonacci(6, 6))  # return [8]
+print(fibonacci(3, 6))  # return [2, 3, 5, 8]
+print(fibonacci(0, 2))  # return None
+print(fibonacci(-1, 20))  # return None
+print(fibonacci(5, 4))  # return None
+print(fibonacci(6, 6))  # return [8]
 
 # Задача-2:
 # Напишите функцию, сортирующую принимаемый список по возрастанию.
@@ -70,7 +70,7 @@ def sort_to_max(origin_list:list):
 
     return result
 
-# print(sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0]))
+print(sort_to_max([2, 10, -12, 2.5, 20, -11, 4, 4, 0]))
 
 
 # Задача-3:
