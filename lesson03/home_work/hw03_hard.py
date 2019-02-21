@@ -151,8 +151,8 @@ def solve_fraction_equation(eq: str):
     return fract_represent(fract3)
 
 
-# print(solve_fraction_equation("5/6 + 4/7"))
-# print(solve_fraction_equation("-2/3 - -2"))
+print(solve_fraction_equation("5/6 + 4/7"))
+print(solve_fraction_equation("-2/3 - -2"))
 
 # Задание-2:
 # Дана ведомость расчета заработной платы (файл "data/workers").
@@ -255,3 +255,41 @@ form_working_hours(workers_file, hours_of_file)
 # Подсказка:
 # Чтобы получить список больших букв русского алфавита:
 # print(list(map(chr, range(ord('А'), ord('Я')+1))))
+"""
+К сожалению, времени свободного не нашлось чтобы сделать правильнее,
+поскольку открывание файла и закрывание - очень долгая процедура.
+Но код выглядим вполне локанично.
+Единственный минус - каждый файл заканчивается пустой строкой.
+"""
+import os
+
+
+def sort_fruits_list(filename: str):
+    """
+    Функция считывает список фруктов из файла и раскладывает по файлам по алфавиту
+    :param filename:
+    :return:
+    """
+
+    # Для удобства, будем создавать файлы в отдельной директории
+    FILES_DIR = "data/fruits"
+    if not os.path.exists(FILES_DIR):
+        os.makedirs(FILES_DIR)
+
+    # Считываем файл построчно
+    with open(filename, 'r') as f:
+        fruit_raw = f.readline()
+
+        while fruit_raw != '':
+            fruit = fruit_raw
+            # Если строка не пустая
+            if fruit and fruit != '\n':
+                # Выделяем первую букву в строке
+                first_char = fruit[0]
+                # Откроем файл на дозапись и запишем строку
+                with open(f"{FILES_DIR}/fruits_{first_char}", 'a') as n:
+                    n.write(fruit)
+            fruit_raw = f.readline()
+
+
+sort_fruits_list("data/fruits.txt")
