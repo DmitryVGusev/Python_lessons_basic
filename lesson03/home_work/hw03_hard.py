@@ -211,25 +211,10 @@ def form_working_hours(workers_file: str, hours_of_file: str):
     """
 
     # Подсчет часов
-    def calculate_income(l: list):
-        """
-        Функция высчитывает доход работника за месяц
-        выбирая из списка зарплату рабочего, норму и выработку.
-        :param l:
-        :return:
-        """
-        per_hour_salary = l[0] / l[2]
-        if l[2] >= l[3]:
-            # Сумма за отработанные часы до нормы
-            income = l[3] * per_hour_salary
-        else:
-            # Сумма за отработанные часы сверх нормы
-            # xp + 2p(y-x) = p(2y - x), где x - норма, y - выработка, p - per_hour salary
-            income = per_hour_salary * (2*l[3] - l[2])
-
     for key in workers.keys():
-
+        # Зарплата за час
         per_hour_salary = workers[key][0] / workers[key][2]
+
         if workers[key][2] >= workers[key][3]:
             # Сумма за отработанные часы до нормы
             income = workers[key][3] * per_hour_salary
