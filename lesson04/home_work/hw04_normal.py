@@ -73,8 +73,9 @@ def parse_line1(line):
     return result
 
 
-# print(parse_line1(line))
-# print(parse_line1_re(line))
+# Вывод результатов
+print(parse_line1(line))
+print(parse_line1_re(line))
 
 # Задание-2:
 # Вывести символы в верхнем регистре, слева от которых находятся
@@ -102,13 +103,26 @@ line_2 = 'mtMmEZUOmcqWiryMQhhTxqKdSTKCYEJlEZCsGAMkgAYEOmHBSQsSUHKvSfbmxULaysm'\
 
 
 def parse_line2_re(line):
+    """
+    Выводит символы в верхнем регистре, слева от которых находятся два символа в нижнем регистре,
+      а справа - два символа в верхнем регистре. Реализуется с помощью регулярных переменных.
+    :param line: строка с символами
+    :return: список последовательностей
+    """
     pattern = '[a-z]{2}([A-Z]+)[A-Z]{2}'
     return re.findall(pattern, line)
 
 
 def parse_line2(line):
+    """
+    Выводит символы в верхнем регистре, слева от которых находятся два символа в нижнем регистре,
+      а справа - два символа в верхнем регистре.
+    :param line: строка с символами
+    :return: список последовательностей
+     """
 
     def char_is_up(char):
+        """Проверяет если выбранный символ является заглавной буквой"""
         if ord(char) in range(ord('A'), ord('Z') + 1):
             return True
         else:
@@ -116,12 +130,14 @@ def parse_line2(line):
 
 
     def left(line, i):
+        """Проверяет если слева от выбранного элемента два символа в нижнем регистре"""
         if ord(line[i-1]) in range(ord('a'), ord('z') + 1) and ord(line[i-2]) in  range(ord('a'), ord('z') + 1):
             return True
         else:
             return False
 
     def right(line, i):
+        """Проверяет если справа от выбранного элемента два символа в верхнем регистре"""
         if ord(line[i+1]) in range(ord('A'), ord('Z') + 1) and ord(line[i+2]) in range(ord('A'), ord('Z') + 1):
             return True
         else:
@@ -129,7 +145,10 @@ def parse_line2(line):
 
     el = ''
     result = []
+    # Проверка что с левой стороны выбранного элемента два символа в нижнем регистре"
     is_left_part_present = False
+
+
     for i in range(2, len(line)-2):
         if char_is_up(line[i]):
             if is_left_part_present or left(line, i):
@@ -156,3 +175,44 @@ print(parse_line2(line_2))
 # 2500-значное произвольное число.
 # Найдите и выведите самую длинную последовательность одинаковых цифр
 # в вышезаполненном файле.
+from random import randint
+from itertools import groupby
+
+
+def fill_file(filename: str):
+    """
+    Заполняет указанный файл произвольными целыми цифрами,
+    в результате в файле должно быть 2500-значное произвольное число
+    :param filename: путь/имя_файла
+    :return: None
+    """
+
+    # Создаем список из 2500 произвольных чисел от 0 до 9
+    number = [str(randint(0, 9)) for _ in range(2500)]
+
+    # Записываем список в файл, предварительно переведя его в строку
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(''.join(number))
+
+
+def count_max_same_number_length(filename: str):
+    """
+    Находит самую длинную последовательность одинаковых цифр в числе в заданном файле
+    :param filename: имя файла
+    :return: Список с самой длинной последовотельностью одинаковых чисел
+    """
+
+    # Считываем строку из файла
+    with open(filename, 'r', encoding='utf-8') as f:
+        number = f.readline().strip()
+
+    # Группируем строки по последовательности одинаковых цифр
+    grouped = [list(g) for k, g in groupby(number)]
+
+    # Возвращаем максимально длинную последовательность
+    return max(grouped, key=len)
+
+
+# Проверка результатов
+fill_file('some.txt')
+print(count_max_same_number_length('some.txt'))
