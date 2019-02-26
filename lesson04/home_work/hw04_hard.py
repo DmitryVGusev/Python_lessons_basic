@@ -12,6 +12,7 @@ matrix = [[1, 0, 8],
 #                  [8, 1, 2]]
 
 # Суть сложности hard: Решите задачу в одну строку
+matrix_t = list(map(list, zip(*matrix)))
 
 # Задание-2:
 # Найдите наибольшее произведение пяти последовательных цифр в 1000-значном числе.
@@ -38,6 +39,24 @@ number = """
 84580156166097919133875499200524063689912560717606
 05886116467109405077541002256983155200055935729725
 71636269561882670428252483600823257530420752963450"""
+
+from functools import reduce
+
+number = number.replace('\n', '')
+
+
+def get_5_mult(line, ind):
+    return reduce((lambda x, y: x * y), [int(line[i]) for i in range(ind, ind+5)])
+
+
+result_all = []
+for i in range(len(number)-5):
+    result_all.append([i, get_5_mult(number, i)])
+
+result = max(result_all, key=lambda item: item[1])
+
+# проверка результатов
+print(result)
 
 
 # Задание-3 (Ферзи):
