@@ -14,7 +14,7 @@ matrix = [[1, 0, 8],
 # Суть сложности hard: Решите задачу в одну строку
 
 
-def transporate_matrix(matrix):
+def transporate(matrix):
     """
     Транспонирует матрицу
     :param matrix: матрица формата список вложенных списков
@@ -24,7 +24,7 @@ def transporate_matrix(matrix):
 
 
 # Проверка результатов
-# print(transporate_matrix(matrix))
+print(transporate(matrix))
 
 # Задание-2:
 # Найдите наибольшее произведение пяти последовательных цифр в 1000-значном числе.
@@ -54,21 +54,42 @@ number = """
 
 from functools import reduce
 
-number = number.replace('\n', '')
 
 
-def get_5_mult(line, ind):
-    return reduce((lambda x, y: x * y), [int(line[i]) for i in range(ind, ind+5)])
 
+def get_top_five_mult(num: str):
+    """
+    Находит наибольшее произведение пяти последовательных цифр в числе
+    :param num: Многозначное число (>=5) в формате строки
+    :return: Пара (ключь, значение) индекс последовательности и произведение.
+    None при некорректности входных данных
+    """
+    def get_five_nums_multiplied(line, ind):
+        """Возвращает произведение пяти чисел из списка начиная с заданного индекса"""
+        return reduce((lambda x, y: x * y), [int(line[i]) for i in range(ind, ind+5)])
 
-result_all = []
-for i in range(len(number)-5):
-    result_all.append([i, get_5_mult(number, i)])
+    # Выходим из функции если на вход не число или число менее 5 знаков
+    if not num.isdigit() or len(num) < 5:
+        return None
 
-result = max(result_all, key=lambda item: item[1])
+    # Проходим по всему списку и получаем пары [стартИндекс, произведение]
+    result_all = []
+    for i in range(len(num)-4):
+        result_all.append([i, get_five_nums_multiplied(num, i)])
+
+    # Находим пару с максимальным произведением
+    result = max(result_all, key=lambda item: item[1])
+    return f"{result[1]}, {result[0]}"
+
 
 # Проверка результатов
-print(result)
+# Избавляемся от переноса строк в числе-примере
+number = number.replace('\n', '')
+
+print(get_top_five_mult(number))  # 40824, 364
+print(get_top_five_mult("12345"))  # 120, 0
+print(get_top_five_mult("123not_digit456"))  # None
+print(get_top_five_mult("123"))  # None
 
 
 # Задание-3 (Ферзи):
@@ -80,22 +101,26 @@ print(result)
 # Если ферзи не бьют друг друга, выведите слово NO, иначе выведите YES.
 
 
-def is_correct_position(coords):
+def is_correct_position(coords: list):
     """
     Проверяет возможность нахождения 8ми ферзей на одной доске 8х8.
     Фактически, проверяет что на каждой строке и столбце одновременно находится лишь одна фигура
-    :param coords:
-    :return: 'NO' Если ферзи не бьют друг друга, иначе 'YES'.
+    :param coords: Список списков из двух целых
+    :return: 'NO' Если ферзи не бьют друг друга, иначе 'YES', 'ERROR' если входные параметры некорректны
     """
 
     # Попарно сравниваем координаты каждого ферзя
     for i in range(8):
         for j in range(i+1, 8):
-            # Если совподают оси Х, Y или диагонали то значит ферзи бьют друг друга
-            if coords[i][0] == coords[j][0] \
-                    or coords[i][1] == coords[j][1] \
-                    or abs(coords[i][0] - coords[j][0]) == abs(coords[i][1] - coords[j][1]):
-                return 'YES'
+            # Если входные параметры некорректны то возвращаем ошибку
+            try:
+                # Если совподают оси Х, Y или диагонали то значит ферзи бьют друг друга
+                if coords[i][0] == coords[j][0] \
+                        or coords[i][1] == coords[j][1] \
+                        or abs(coords[i][0] - coords[j][0]) == abs(coords[i][1] - coords[j][1]):
+                    return 'YES'
+            except:
+                return 'ERROR'
     # Ферзи не бют друг друга
     return 'NO'
 
@@ -111,4 +136,10 @@ coords = [
     [5, 6],
     [2, 7]
 ]  # Корректная расстановка
-print(is_correct_position(coords))
+print(is_correct_position(coords))  # NO
+
+from random import randint
+random_coords = [[randint(0, 7), randint(0, 7)] for _ in range(8)]
+print(is_correct_position(random_coords))  # YES
+
+print(is_correct_position([]))  # ERROR
