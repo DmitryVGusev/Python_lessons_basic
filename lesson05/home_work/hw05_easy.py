@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from os import mkdir, rmdir
 from os import listdir
 from os.path import isdir
@@ -10,7 +11,12 @@ from os.path import isdir
 # И второй скрипт, удаляющий эти папки.
 
 
-def shell_mkdir(dirname):
+def shell_mkdir(dirname=None):
+    """Создает директорию с заданным именем"""
+    if not dirname:
+        print("Необходимо указать имя директории!")
+        return None
+
     try:
         mkdir(dirname)
         print(f"Директория {dirname} успешно создана.")
@@ -20,10 +26,17 @@ def shell_mkdir(dirname):
         print(f"Невозможно создать директорию {dirname}.")
 
 
-def shell_rmdir(dirname):
+def shell_rmdir(dirname=None):
+    """Удаляет директорию с заданным именем"""
+    if not dirname:
+        print("Необходимо указать имя директории!")
+        return None
+
     try:
         rmdir(dirname)
         print(f"Директория {dirname} успешно удалена.")
+    except PermissionError:
+        print(f"Нет прав на удаление {dirname}!")
     except FileNotFoundError:
         print(f"Невозможно удалить директорию {dirname}: директории не существует")
     except:
@@ -45,10 +58,22 @@ if __name__ == "__main__":
 # Напишите скрипт, отображающий папки текущей директории.
 
 
-def shell_ls(path=".", cmd_line: str=''):
-    """Отображает список файлов в текущей директории"""
-    curr_dir_contents = listdir(path)
-    if "-d" in cmd_line:
+def shell_ls(path=".", dirs_only=False):
+    """
+    Отображает список файлов в текущей директории
+    :param path: Абсолютный или относительный путь
+    :param dirs_only: Отображать только директории в случае True
+    """
+    try:
+        curr_dir_contents = listdir(path)
+    except TypeError:
+        print("Укажите корректный путь")
+        return None
+    except:
+        print("Невозможно получить список файлов в текущей директории")
+        return None
+    # С ключем dirs_only оторбажает лишь директории
+    if dirs_only:
         for file in curr_dir_contents:
             if isdir(file):
                 print(file)
@@ -60,7 +85,7 @@ def shell_ls(path=".", cmd_line: str=''):
 # Проверка результатов
 if __name__ == "__main__":
     # Отображение папок в текущей директории
-    shell_ls(path=".", cmd_line='-d')
+    shell_ls(".", dirs_only=True)
 
 
 # Задача-3:
@@ -68,15 +93,23 @@ if __name__ == "__main__":
 from shutil import copy
 
 
-def shell_cp(src: str, dst: str):
+def shell_cp(src: str):
     """Копирует заданный файл"""
+    if not src:
+        print("Необходимо указать имя файла")
+
+    dst = src + "_copy"
     try:
         copy(src, dst)
         print(f"Скопирован: {src} -> {dst}")
+    except PermissionError:
+        print(f"Нет прав на копирование {src}!")
+    except FileNotFoundError:
+        print(f"Не удалось скопировать {src}: файл не найден")
     except:
         print(f"Не удалось скопировать {src} -> {dst}")
 
 
 # Проверка результатов
 if __name__ == "__main__":
-    shell_cp(__file__, __file__ + "_copy")
+    shell_cp(__file__   )

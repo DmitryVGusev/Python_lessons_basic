@@ -17,21 +17,26 @@
 # оформленные в виде соответствующих функций,
 # и импортированные в данный файл из easy.py
 
-from os import chdir
-from lesson05.home_work import hw05_easy
+from os import chdir, getcwd
+import hw05_easy
 
 
 def shell_cd(path):
     """Сменяет текущую директорию на указанную"""
+    if not path:
+        print("Укажите путь!")
+        return
+
     try:
         chdir(path)
-        print("Успешно перешел")
+        print(f"Успешно перешел в {getcwd()}")
     except:
         print("Невозможно перейти")
 
 
 if __name__ == '__main__':
     print("Добро пожаловать в командную оболочку pysh")
+
     while True:
         print("\nВыберите действие:\n" +
               "1. Перейти в папку\n" +
@@ -51,6 +56,7 @@ if __name__ == '__main__':
             hw05_easy.shell_rmdir(dirname)
         elif choise == "4":
             dirname = input("Укажите имя директории: ")
+            hw05_easy.shell_mkdir(dirname)
         elif choise == '0':
             print("Завершение работы командной оболочки")
             break
