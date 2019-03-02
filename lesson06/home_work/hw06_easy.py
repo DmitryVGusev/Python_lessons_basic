@@ -5,17 +5,19 @@ from math import sqrt, sin, acos, degrees
 
 class Figure:
     """Класс геометрическая фигура"""
+
     def __init__(self, *args):
+        self.a = "a"
         self.coords = []
         for el in args:
             if self.is_coodrinate_valid(el):
-                self.coords.append(el)
+                self.coords.append(tuple(el))
         self.sides = [self.get_side(self.coords[i], self.coords[i+1]) for i in range(-len(self.coords), 0)]
 
 
     def get_perimeter(self):
         """Возвращает перимерт фигуры"""
-        return sum(self.sides)
+        return round(sum(self.sides), 2)
 
 
     @staticmethod
@@ -106,13 +108,13 @@ class Triangle:
         return round(self.get_height(0) * self.sides[1] / 2, 5)
 
 
-if __name__ == '__main__':
-    triangle = Triangle([1, "0"], [2, 0], [0, 0])
-    egipt_triangle = Triangle([0, 0], [0, 3], [4, 0])
-    print(egipt_triangle.sides)
-    print(list(map(degrees, egipt_triangle.angles)))
-    print(egipt_triangle.get_height(0))
-    print(egipt_triangle.get_square())
+# if __name__ == '__main__':
+    # triangle = Triangle([1, "0"], [2, 0], [0, 0])
+    # egipt_triangle = Triangle([0, 0], [0, 3], [4, 0])
+    # print(egipt_triangle.sides)
+    # print(list(map(degrees, egipt_triangle.angles)))
+    # print(egipt_triangle.get_height(0))
+    # print(egipt_triangle.get_square())
     # print(triangle.get_perimeter())
 
 
@@ -121,3 +123,47 @@ if __name__ == '__main__':
 # проверка, является ли фигура равнобочной трапецией;
 # вычисления: длины сторон, периметр, площадь.
 
+class EquiTrapezium(Figure):
+    num_of_sides = 4
+
+    def __init__(self, a, b, c, d):
+        Figure.__init__(self, a, b, c, d)
+        if len(set(self.coords)) != self.num_of_sides:
+            raise ValueError("Неверное количество точек либо совпадающие точки")
+
+    def is_equi_trapezium(self):
+        """Возвращает True если фигура является равнобочной тропецией"""
+        # Сравнивается равенство диагоналей и противоположных сторон
+        if (self.get_side(self.coords[0], self.coords[2]) == self.get_side(self.coords[1], self.coords[3])
+                and self.sides[0] == self.sides[2] or self.sides[1] == self.sides[3]):
+            return True
+        else:
+            return False
+
+    def get_square(self):
+        """Вычисляет прощадь равнобочной трапеции"""
+
+        # Если фигура не является равнобочной трапецией, выкидывает исключение
+        if not self.is_equi_trapezium():
+            raise Exception("Фигура не является равнобочной трапецией. Вычисление площади невозможно")
+
+        if self.sides[0] == self.sides[2]:
+            a = min(self.sides[1], self.sides[3])
+            b = max(self.sides[1], self.sides[3])
+            c = self.sides[0]
+        else:
+            a = min(self.sides[0], self.sides[2])
+            b = max(self.sides[0], self.sides[2])
+            c = self.sides[1]
+
+        square = (a + b) / 2 * sqrt(c**2 - (b - a)/2)
+        return round(square, 2)
+
+
+# Проверка результатов
+if __name__ == '__main__':
+    # equi = EquiTrapezium([0, 0], [1, 3], [3, 3], [4, 0])
+    equi = EquiTrapezium([3,0], [0,1], [0,3], [3, 4])
+    print(equi.is_equi_trapezium())
+    print(equi.get_perimeter())
+    print(equi.get_square())
