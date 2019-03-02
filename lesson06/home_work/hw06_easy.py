@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # Задача-1: Написать класс для фигуры-треугольника, заданного координатами трех точек.
 # Определить методы, позволяющие вычислить: площадь, высоту и периметр фигуры.
 from math import sqrt, sin, acos, degrees
@@ -7,22 +10,28 @@ class Figure:
     """Класс геометрическая фигура"""
 
     def __init__(self, *args):
-        self.a = "a"
+        # Переменная со списком координат
         self.coords = []
         for el in args:
-            if self.is_coodrinate_valid(el):
+            if self.is_valid_coodrinate(el):
                 self.coords.append(tuple(el))
+
+        # Проверка на несовпадающие координаты
+        if len(set(self.coords)) != len(args):
+            raise Exception("Координаты не должны совпадать")
+
         self.sides = [self.get_side(self.coords[i], self.coords[i+1]) for i in range(-len(self.coords), 0)]
 
-
     def get_perimeter(self):
-        """Возвращает перимерт фигуры"""
+        """Возвращает сумму длин фигуры"""
         return round(sum(self.sides), 2)
 
-
     @staticmethod
-    def is_coodrinate_valid(coord):
-        """Проверяет координаты на валидность"""
+    def is_valid_coodrinate(coord):
+        """
+        Проверяет координаты на валидность.
+        Координата должна быть в виде кортежа или списка и содержать в себе два числа
+        """
         # Координаты каждой точки должны состоять из двух элементов
         if type(coord) not in [tuple, list] or len(coord) != 2:
             raise TypeError(f"{coord} <-- Координаты точек должны быть формата (x,y)")
@@ -41,43 +50,18 @@ class Figure:
         )
 
 
-
-
-"""
-Поскольку не ясно, выбирает ли высоту пользователь или берется любая по усмотрению разработчика,
-решено было пойти по первому пути
-"""
-
-
-class Triangle:
+class Triangle(Figure):
     """Класс треугольник"""
 
     def __init__(self, a, b, c):
-        # Проверка входных параметров
-        # Координаты каждой точки должны состоять из двух элементов
-        for el in [a, b, c]:
-            if type(el) not in [tuple, list] or len(el) != 2:
-                raise TypeError(f"{el} <-- Координаты точек должны быть формата (x,y)")
-            # Элементы координат должны быть числами
-            for i in el:
-                if type(i) not in [int, float]:
-                    raise TypeError(f"{el} <-- Координаты точек должны быть числами")
-
-        # Хранит координаты точек
-        self.coords = (a, b, c)
-
-        # Хранит длины сторон
-        self.sides = [self._get_side(ind) for ind in [-3, -2, -1]]
+        Figure.__init__(self, a, b, c)
 
         # Хранит велечины углов в радианах
         self.angles = [self._get_angle(ind) for ind in [-3, -2, -1]]
 
-    def _get_side(self, ind):
-        """Возвращает длину стороны труегольника"""
-        return sqrt(
-            (self.coords[ind][0] - self.coords[ind+1][0])**2 +
-            (self.coords[ind][1] - self.coords[ind+1][1])**2
-        )
+        # Проверка что точки не находятся на одной прямой
+        if any(angle == 0 for angle in self.angles):
+            raise Exception("Точки не должны лежать на одной прямой")
 
     def _get_angle(self, ind):
         """Возвращает угол в градусах"""
@@ -99,23 +83,19 @@ class Triangle:
 
         return self.sides[ind-1] * sin(self.angles[ind-1])
 
-    def get_perimeter(self):
-        """Возвращает перимерт треугольника"""
-        return sum(self.sides)
-
     def get_square(self):
         """Вычисляет площадь треугольника"""
-        return round(self.get_height(0) * self.sides[1] / 2, 5)
+        return round(self.get_height(0) * self.sides[1] / 2, 2)
 
 
-# if __name__ == '__main__':
-    # triangle = Triangle([1, "0"], [2, 0], [0, 0])
-    # egipt_triangle = Triangle([0, 0], [0, 3], [4, 0])
-    # print(egipt_triangle.sides)
-    # print(list(map(degrees, egipt_triangle.angles)))
-    # print(egipt_triangle.get_height(0))
-    # print(egipt_triangle.get_square())
-    # print(triangle.get_perimeter())
+# Проверка результатов
+if __name__ == '__main__':
+    egipt_triangle = Triangle([0, 0], [0, 3], [4, 0])
+    print(f"Стороны египетского треугольника: {egipt_triangle.sides}")
+    print(f"Углы египеткого треугольника: {list(map(degrees, egipt_triangle.angles))}")
+    print(f"Высота : {egipt_triangle.get_height(0)}")
+    print(f"Площадь егопетского треугольника: {egipt_triangle.get_square()}")
+    print(f"Периметр египетского треугольника: {egipt_triangle.get_perimeter()}")
 
 
 # Задача-2: Написать Класс "Равнобочная трапеция", заданной координатами 4-х точек.
@@ -147,6 +127,7 @@ class EquiTrapezium(Figure):
         if not self.is_equi_trapezium():
             raise Exception("Фигура не является равнобочной трапецией. Вычисление площади невозможно")
 
+        # Определяются бока трапеции и основения
         if self.sides[0] == self.sides[2]:
             a = min(self.sides[1], self.sides[3])
             b = max(self.sides[1], self.sides[3])
@@ -162,8 +143,9 @@ class EquiTrapezium(Figure):
 
 # Проверка результатов
 if __name__ == '__main__':
-    # equi = EquiTrapezium([0, 0], [1, 3], [3, 3], [4, 0])
-    equi = EquiTrapezium([3,0], [0,1], [0,3], [3, 4])
-    print(equi.is_equi_trapezium())
-    print(equi.get_perimeter())
-    print(equi.get_square())
+    print()
+    equi = EquiTrapezium([3, 0], [0, 1], [0, 3], [3, 4])
+    print(f"Стороны трапеции: {equi.sides}")
+    print(f"Является ли равнобочной трапецией: {equi.is_equi_trapezium()}")
+    print(f"Периметр трапеции: {equi.get_perimeter()}")
+    print(f"Площадь равнобочной трапеции: {equi.get_square()}")
