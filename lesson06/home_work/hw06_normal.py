@@ -19,13 +19,14 @@
 
 class Human:
     """Класс Человек"""
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
 
     @property
-    def short_name(self):  # TODO реализовать данный метод
+    def short_name(self):
         """Возвращает Фамилию И.О."""
-        pass
+        full_name = self.name.split()
+        return "{} {}.{}.".format(full_name[0], full_name[1][0], full_name[2][0])
 
 
 class Student(Human):
@@ -59,7 +60,8 @@ class School:
     def __init__(self, name):  # TODO реализовать проверку входных параметров
         self.students = set()
         self.grades = set()
-        self.lessons = set()
+        # Словарь занятий. Ключ - наименование, значение - список классов в котором преподается
+        self.lessons = dict()
         self.teachers = set()
 
     def add_grade(self, grade):
@@ -92,15 +94,16 @@ class School:
 
     def fire_teacher(self, teacher):  # TODO реализовать данный метод
         """Увольняет учителя из школы"""
+
         pass
 
     def add_lessons(self, *lessons):
         """Добавить предмет(ы) в школьный курс"""
         for lesson_name in lessons:
-            if any(l.name == lesson_name for l in self.lessons):
+            if self.lessons.get(lesson_name):
                 print(f"Предмет {lesson_name} уже в учебной программе школы.")
             else:
-                self.lessons.add(School.Lesson(name=lesson_name))
+                self.lessons.update({lesson_name: []})
                 print(f"Предмет {lesson_name} добавлен в учебную программу школы.")
 
     def remove_lesson(self, lesson_name):
@@ -108,8 +111,22 @@ class School:
         if any(t.spec == lesson_name for t in self.teachers):
             print(f"Невозможно удалить {lesson_name} из учебной программы: сначала увольте учителя.")
         else:
-            self.lessons.remove([l for l in self.lessons if l.name == lesson_name][0])
+            self.lessons.remove([l for l in self.lessons if l.name == lesson_name][0])  # TODO переписать
             print(f"Предмет {lesson_name} удален из школьной программы.")
+
+    def add_lesson_to_grade(self, lesson_name):
+        """Добавляет предмет в классную программу"""
+        if lesson_name not in self.lessons:
+            print(f"Предмет {lesson_name} не числится в школьной программе.")
+        elif not any(lambda t: t.spec == lesson_name, self.teachers):
+            print(f"В школе нет преподавателя предмета {lesson_name}.")
+        # TODO реализовать данный метод
+        pass
+
+    def remove_lesson_from_grade(self):
+        """Убрать предмет из классной программы"""
+        # TODO реализовать данный метод
+        pass
 
     def add_student(self, student: Student, grade):
         """Добавляет ученика в школу"""
