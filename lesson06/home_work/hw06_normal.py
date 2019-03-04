@@ -31,14 +31,33 @@ class Human:
 
 class Student(Human):
     """Класс Ученик"""
-    def __init__(self, name, parents, grade=None):
+    def __init__(self, name, parents, grade=None):  # TODO реализовать проверку входных параметров
         Human.__init__(self, name)
         self.parents = parents
         self.grade = grade
 
-    def get_parents_name(self):  # TODO реализовать данный метод
-        """Возвращает ФИО родителей ученика"""
-        pass
+        # Указатель на объект школа
+        self.school = None
+
+    def get_parents_name(self):
+        """Отображает ФИО родителей ученика"""
+        print(f"Ученик: {self.name}. Родители: {self.parents[0]} и {self.parents[1]}")
+
+    def get_student_info(self):
+        """Возвращает информацию об ученике
+        класс, учителя, предметы"""
+        if not self.school:
+            print(f"{self.short_name} не учится в школе")
+        else:
+            # lessons = list(filter(lambda lesson: self.grade in lesson, self.school.lessons))
+            lessons = [lesson for lesson in self.school.lessons if self.grade in self.school.lessons[lesson]]
+            teachers = [teacher for teacher in self.school.teachers if teacher.spec in lessons]
+            print("{}: ученик {} класса. \nПредметы: {}.\n Учителя: {}\n".format(
+                self.short_name,
+                self.grade,
+                ' '.join(map(str, lessons)),
+                ' '.join(map(str, teachers))
+            ))
 
 
 class Teacher(Human):
@@ -50,12 +69,6 @@ class Teacher(Human):
 
 class School:
     """Класс школа"""
-    class Lesson:
-        """Вложенный класс предмет. Используется внутри класса школы"""
-        def __init__(self, name):
-            self.name = name
-            self.grades = []
-            self.teacher = None
 
     def __init__(self, name):  # TODO реализовать проверку входных параметров
         self.students = set()
@@ -88,14 +101,16 @@ class School:
             print(f"Невозможно нанять учителя. Данный предмет ({teacher.spec}) уже преподает другой учитель.")
         else:
             self.teachers.add(teacher)
-            # Закрепим преподавателя за предметом
-            spec_lesson = list(filter(lambda l: l.name == teacher.spec, self.teachers))[0]
-            spec_lesson.teacher = teacher
 
-    def fire_teacher(self, teacher):  # TODO реализовать данный метод
+    def fire_teacher(self, teacher: Teacher):  # TODO реализовать данный метод
         """Увольняет учителя из школы"""
-
-        pass
+        if teacher not in self.teachers:
+            print("Этот учитель не работает в школе")
+        if len(self.lessons[teacher.spec]) != 0:
+            print(f"Невозможно уволить {teacher.short_name}. ",
+                  f"Его предмет ({teacher.spec}) еще входит в учебную программу классов")
+        else:
+            self.teachers.remove(teacher)
 
     def add_lessons(self, *lessons):
         """Добавить предмет(ы) в школьный курс"""
@@ -108,27 +123,39 @@ class School:
 
     def remove_lesson(self, lesson_name):
         """Удаляет предмет из школьной программы"""
-        if any(t.spec == lesson_name for t in self.teachers):
+        if not self.lessons.get(lesson_name):
+            print(f"Предмет {lesson_name} не входит в школьную программу")
+        elif any(t.spec == lesson_name for t in self.teachers):
             print(f"Невозможно удалить {lesson_name} из учебной программы: сначала увольте учителя.")
         else:
-            self.lessons.remove([l for l in self.lessons if l.name == lesson_name][0])  # TODO переписать
+            self.lessons.pop(lesson_name)
             print(f"Предмет {lesson_name} удален из школьной программы.")
 
-    def add_lesson_to_grade(self, lesson_name):
+    def add_lesson_to_grade(self, lesson_name, grade):
         """Добавляет предмет в классную программу"""
-        if lesson_name not in self.lessons:
-            print(f"Предмет {lesson_name} не числится в школьной программе.")
+        if grade not in self.grades:
+            print(f"В школе нет {grade} класса")
+        elif lesson_name not in self.lessons:
+            print(f"Предмет {lesson_name} не входит в школьную программу.")
         elif not any(lambda t: t.spec == lesson_name, self.teachers):
             print(f"В школе нет преподавателя предмета {lesson_name}.")
-        # TODO реализовать данный метод
-        pass
+        else:
+            self.lessons[lesson_name].append(grade)
+            print(f"Предмет {lesson_name} добавлен в учебную программу {grade} класса")
 
-    def remove_lesson_from_grade(self):
+    def remove_lesson_from_grade(self, lesson_name: str, grade: str):
         """Убрать предмет из классной программы"""
-        # TODO реализовать данный метод
-        pass
+        if grade not in self.grades:
+            print(f"В школе нет {grade} класса")
+        elif lesson_name not in self.lessons:
+            print(f"Предмет {lesson_name} не входит в школьную программу.")
+        elif lesson_name not in self.lessons[lesson_name]:
+            print(f"Предмет {lesson_name} не входит в программу {grade} класса.")
+        else:
+            self.lessons[lesson_name].remove(grade)
+            print(f"Предмет {lesson_name} удален из учебной программы {grade} класса.")
 
-    def add_student(self, student: Student, grade):
+    def add_student(self, student: Student, grade: str):
         """Добавляет ученика в школу"""
         if grade not in self.grades:
             print(f"В школе нет {grade} класса.")
@@ -148,24 +175,27 @@ class School:
             self.students.remove(student)
             print(f"Ученик {student.short_name} отчислен.")
 
-    def set_student_to_grade(self, student: Student, grade):
+    def set_student_to_grade(self, student: Student, grade: str):  # TODO обработать исключения
         """Перевести школьника в класс"""
         student.grade = grade
         print(f"{student.short_name} переведен в {grade} класс")
 
-    def get_grades_list(self):
+    def get_grades_list(self):  # TODO оформить вывод
         """Возвращает список классов"""
-        return self.grades  # TODO оформить вывод
+        return self.grades
 
-    def get_students_list_by_class(self, grade):
+    def get_students_list_by_grade(self, grade: str):  # TODO оформить вывод
         """Возвращает список учеников в классе"""
-        # TODO оформить вывод
         return list(filter(lambda s: s.grade == grade, self.students))
 
-    def get_teachers_list_by_class(self, grade):  # TODO реализовать данный метод
-        """Возвращает список учителей, преподающих в классе"""
-        return
+    def get_lessons_by_grade(self, grade):
+        """Возвращает список предметов в классе"""
+        return list(filter(lambda l: grade in l, self.lessons))
 
-if __name__ == '__main__':
-    # TODO реализовать проверку результатов
+    def get_teachers_list_by_grade(self, grade):
+        """Возвращает список учителей, преподающих в классе"""
+        return [t for t in self.teachers if t.spec in self.get_lessons_by_grade(grade)]
+
+
+if __name__ == '__main__':  # TODO реализовать проверку результатов
     pass
