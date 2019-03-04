@@ -23,16 +23,20 @@ class Employee:
 
     def __init__(self, raw_line: str):
         employee_data = raw_line.split()
+        # Имя и фамилия сотрудника
         self.first_name = employee_data[0]
         self.last_name = employee_data[1]
+        # Оклад сотрудника
         self.salary = int(employee_data[2])
         self.position = employee_data[3]
+        # Норма отработанных часов
         self.hours_expected = int(employee_data[4])
+        # Количество отработанных часов
         self.hours_worked_out = None
+        # Зарплата за месяц
         self.income = None
+        # Добавить экземпляр класса в список объектов класса
         self.employees.append(self)
-
-        pass
 
     @staticmethod
     def add_hours(raw_line: str):
