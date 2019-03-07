@@ -61,7 +61,7 @@ from random import randint, shuffle
 
 
 class LotoCard:
-    def __init__(self, owner_name):  # TODO переделать этот метод
+    def __init__(self, owner_name):
         """Рандомный инициализватор карточки"""
         self.owner_name = owner_name
 
@@ -73,23 +73,28 @@ class LotoCard:
                 nums.append(rnd)
 
         self.matrix = []
-        for i in range(3):
+        for i in range(3):  # fixme Неправильная генерация
             self.matrix.append(sorted([nums[j] for j in range(i*5, i*5 + 5)]))
 
+        # Линии произвольно заполняются пробелами
+        for line in self.matrix:
+            for _ in range(5):
+                line.insert(randint(0, len(line)-1), ' ')
 
-    def show_card(self):  # TODO переделать этот метод
+    def show_card(self):
         """Отображает карточку"""
-        print("--{}--".format(self.owner_name))
+        print(self.owner_name)
+        out_format = "{:>2} " * 8
         for i in self.matrix:
-            print(*i)
-        print("------------")
+            print(out_format.format(*i))
+        print("--------------------------")
         pass
 
     def num_is_in_card(self, num: int):
         """Проверить наличие номера на карточке"""
         return any(num in line for line in self.matrix)
 
-    def cross_out_num_in_card(self, num: int):  # TODO реализовать метод
+    def cross_out_num_in_card(self, num: int):
         """Зачеркнуть номер на карточке"""
         for line in self.matrix:
             try:
@@ -101,7 +106,7 @@ class LotoCard:
     def is_win(self):
         """Проверить что карточка выиграла"""
         for line in self.matrix:
-            if any(str(i) != '-' for i in line):
+            if any(str(i) not in [' ', '-'] for i in line):
                 return False
         return True
 
@@ -119,8 +124,8 @@ def burrel_bag():
 
 if __name__ == '__main__':
     print("Старт игры.")
-    your_card = LotoCard("Ваша карточка")
-    comp_card = LotoCard("Карточка компьютера")
+    your_card = LotoCard("------ Ваша карточка -----")
+    comp_card = LotoCard("-- Карточка компьютера ---")
     answers = []
     for burrel, elapse in burrel_bag():
         print("\nНовый бочонок: {} (осталось {})".format(burrel, elapse))
