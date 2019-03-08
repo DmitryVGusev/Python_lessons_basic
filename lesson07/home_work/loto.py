@@ -61,6 +61,7 @@ from random import randint, shuffle
 
 
 class LotoCard:
+    """Класс карточка лото"""
     def __init__(self, owner_name):
         """Рандомный инициализватор карточки"""
         self.owner_name = owner_name
@@ -113,8 +114,8 @@ class LotoCard:
 
 def burrel_bag():
     """
-    Достает боченок из мешка
-    :return: Номер баченка, количество оставшишся в мешке баченков
+    Достает бочонок из мешка
+    :return: Номер бочонка, количество оставшишся в мешке бочонков
     """
     bag = [x for x in range(1, 91)]
     while len(bag) > 0:
@@ -123,33 +124,45 @@ def burrel_bag():
 
 
 if __name__ == '__main__':
+
+    print("======Игра в лото======")
     print("Старт игры.")
+
+    # Инициализация карточек
     your_card = LotoCard("------ Ваша карточка -----")
     comp_card = LotoCard("-- Карточка компьютера ---")
-    answers = []
+
+    # Для быстрой проверки можно воспользоваться автоматическим вариантом игры
+    # В автоматическом режиме пользователя не спрашивают о дальнейшем шаге
+    autogame = input("Вы хотите чтобы игра прошла автоматически? (y/n) [n]: ") or 'n'
+
     for burrel, elapse in burrel_bag():
         print("\nНовый бочонок: {} (осталось {})".format(burrel, elapse))
         your_card.show_card()
         comp_card.show_card()
-        # if your_card.num_is_in_card(burrel):
-        #     ans = input("Зачеркнуть цифру? (y/n) ")
-        #     if ans.lower() in ['y', 'yes']:
-        #         your_card.cross_out_num_in_card(burrel)
-        #     else:
-        #         print("Вы проиграли.")
-        #         break
-        # else:
-        #     ans = input("Продолжить игру? (y/n) ")
-        #     if ans.lower() in ['n', 'no']:
-        #         print("Вы проиграли.")
-        #         break
 
-        if your_card.num_is_in_card(burrel):
-            your_card.cross_out_num_in_card(burrel)
+        # В случае автоигры пользователю не выводится приглашение
+        if autogame.lower() in ['y', 'yes']:
+            if your_card.num_is_in_card(burrel):
+                your_card.cross_out_num_in_card(burrel)
+        else:
+            if your_card.num_is_in_card(burrel):
+                ans = input("Зачеркнуть цифру? (y/n) ")
+                if ans.lower() in ['y', 'yes']:
+                    your_card.cross_out_num_in_card(burrel)
+                else:
+                    print("Вы проиграли.")
+                    break
+            else:
+                ans = input("Продолжить игру? (y/n) ")
+                if ans.lower() in ['n', 'no']:
+                    print("Вы проиграли.")
+                    break
 
         if comp_card.num_is_in_card(burrel):
             comp_card.cross_out_num_in_card(burrel)
 
+        # Проверка карточек в конце хода
         if your_card.is_win():
             print("Поздравляем, вы выиграли!")
             break
