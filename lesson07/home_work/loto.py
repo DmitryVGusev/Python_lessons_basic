@@ -75,18 +75,18 @@ class LotoCard:
                 nums.append(rnd)
 
         self.matrix = []
-        for i in range(3):  # fixme Неправильная генерация
+        for i in range(3):
             self.matrix.append(sorted([nums[j] for j in range(i * 5, i * 5 + 5)]))
 
         # Линии произвольно заполняются пробелами
         for line in self.matrix:
-            for _ in range(5):
+            for _ in range(4):
                 line.insert(randint(0, len(line) - 1), ' ')
 
     def show_card(self):
         """Отображает карточку"""
         print(self.owner_name)
-        out_format = "{:>2} " * 8
+        out_format = "{:>2} " * 9
         for i in self.matrix:
             print(out_format.format(*i))
         print("--------------------------")
