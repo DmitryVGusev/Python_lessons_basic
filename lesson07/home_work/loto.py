@@ -90,7 +90,7 @@ class LotoCard:
         for i in self.matrix:
             print(out_format.format(*i))
         print("--------------------------")
-        pass
+        passпше
 
     def num_is_in_card(self, num: int):
         """Проверить наличие номера на карточке"""
